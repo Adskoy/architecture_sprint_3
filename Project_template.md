@@ -60,7 +60,7 @@
 
 > Здесь прямой рендер из директории `./diagrams`. Онлайн-просмотрщик неправильно отрисовывает это дело из-за размера.
 
-[Диаграмма контейнеров - сервис сценариев](./diagrams/container-workflow.puml)
+[Диаграмма контейнеров - сервис сценариев](./diagrams/container.puml)
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/container.puml)
 
