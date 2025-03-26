@@ -1,0 +1,43 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Универсальная диаграмма компонентов для сервисов устройств 
+
+left to right direction
+
+Container(webui, "Веб-интерфейс", "React", "Абстракция для WebUI->BFF->API Gate")
+Container(mobileapp, "Мобильное приложение", "Kotlin", "Абстракция для App->BFF->API Gate")
+
+Container(redis, "Распределенный кэш", "Redis/Garnet", "Кэширование частых запросов и показаний датчиков") #red
+ContainerQueue(kafka, "Брокер сообщений", "Kafka", "Обеспечение связи между сервисами") #orange
+Container(hub, "Хаб устройств", "OpenHAB", "Унифицированная шина для различных смарт-устройств") #purple
+
+Container(db_boundary, "MongoDB cluster") {
+    ContainerDb(db, "База устройств", "Primary", "Write replica") #green
+    ContainerDb(db2, "База устройств", "Secondary", "Read replica") #green
+    ContainerDb(db3, "База устройств", "Secondary", "Read replica") #green
+    Rel(db, db3, "Реплицируется")
+    Rel(db, db2, "Реплицируется")
+}
+
+Container_Boundary("workflow_boundary", "Сервис управления устройствами") {
+
+    Component(device_controller, "Device Controller", "Spring REST controller", "Позволяет пользователям добавлять/удалять устройства в подписку")
+    Component(repo, "Device Repository", "Spring Bean", "Хранилище устройств")
+    Component(notifier, "Notification Sender", "Spring Bean", "Занимается рассылкой уведомлений")
+    
+    Rel(repo, redis, "Читает и пишет кэш устройств")
+    Rel(device_controller, repo, "Сохраняет данные об устройстве")
+    Rel(device_controller, redis, "Читает показатели датчиков из")
+    Rel(kafka, redis, "Публикует показатели датчиков в")
+    Rel(repo, db_boundary, "Читает и пишет инфо об устройствах", "MQL")
+    
+    Rel(repo, hub, "Регистрирует/отписывает устройство в")
+}
+
+
+
+Rel(webui, device_controller, "Шлёт CRUD запросы", "REST")
+Rel(mobileapp, device_controller, "Шлёт CRUD запросы", "REST")
+
+@enduml

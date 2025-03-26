@@ -50,8 +50,6 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-> Если что, тут не картинки, а прямой рендер из директории `./diagrams`
-
 [Диаграмма контекста монолита](./diagrams/as-is.puml)
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/as-is.puml)
@@ -60,13 +58,23 @@
 
 **Диаграмма контейнеров (Containers)**
 
-[Диаграмма контейнеров](./diagrams/container.puml)
+> Здесь прямой рендер из директории `./diagrams`. Онлайн-просмотрщик неправильно отрисовывает это дело из-за размера.
+
+[Диаграмма контейнеров - сервис сценариев](./diagrams/container-workflow.puml)
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/container.puml)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+Выделены 3 основных рабочих сервиса (сервисы устройств объединены в единую диаграмму)
+
+[Диаграмма контейнеров - сервис сценариев](./diagrams/component-workflow.puml)
+[Диаграмма контейнеров - сервисы устройств](./diagrams/component-device.puml)
+[Диаграмма контейнеров - сервис авторизации](./diagrams/component-auth.puml)
+
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-workflow.puml)
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-device.puml)
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-auth.puml)
 
 **Диаграмма кода (Code)**
 
