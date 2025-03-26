@@ -1,7 +1,7 @@
 @startuml
-title C4 Диаграмма контекста монолитной системы
+title C4 Диаграмма сущностей
 
-top to bottom direction
+left to right direction
 
 !includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
