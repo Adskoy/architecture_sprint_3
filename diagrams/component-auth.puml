@@ -1,0 +1,43 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Диаграмма сервиса пользователей
+
+left to right direction
+
+Container(webui, "Веб-интерфейс", "React", "Абстракция для WebUI->BFF->API Gate")
+Container(mobileapp, "Мобильное приложение", "Kotlin", "Абстракция для App->BFF->API Gate")
+
+ContainerQueue(kafka, "Брокер сообщений", "Kafka", "Обеспечение связи между сервисами") #orange
+
+Container(db_boundary, "PostgreSQL cluster") {
+    ContainerDb(db, "База пользователей", "Primary", "Write replica") #0078d7
+    ContainerDb(db2, "База пользователей", "Secondary", "Read replica") #0078d7
+    ContainerDb(db3, "База пользователей", "Secondary", "Read replica") #0078d7
+    Rel(db, db3, "Реплицируется")
+    Rel(db, db2, "Реплицируется")
+}
+
+Container_Boundary("workflow_boundary", "Сервис аутентификации") {
+
+    Component(account_controller, "Account Controller", "Spring REST controller", "Регистрация аккаунта, смена учётных данных")
+    Component(auth_controller, "Auth Controller", "Spring REST controller", "Получение и обновление JWT")
+    Component(repo, "Account manager", "Spring Bean", "Менеджер учетных записей")
+    Component(notifier, "Notification Sender", "Spring Bean", "Занимается рассылкой уведомлений")
+    
+    Rel(account_controller, repo, "Добавляет учётку")
+    Rel(auth_controller, repo, "Валидирует креды через")
+    Rel(repo, notifier, "Уведомляет о смене пароля используя")
+    Rel(notifier, kafka, "Отсылает уведомление через")
+    
+    Rel(repo, db_boundary, "Хранит данные в")
+}
+
+
+
+Rel(webui, account_controller, "Шлёт CRUD запросы", "REST")
+Rel(mobileapp, account_controller, "Шлёт CRUD запросы", "REST")
+Rel(webui, auth_controller, "Шлёт CRUD запросы", "REST")
+Rel(mobileapp, auth_controller, "Шлёт CRUD запросы", "REST")
+
+@enduml

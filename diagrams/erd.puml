@@ -1,0 +1,113 @@
+@startuml
+title C4 Диаграмма сущностей
+
+left to right direction
+
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+entity User {
+    id: string
+    email: string
+    passwordHash: string
+    salt: string 
+    register()
+    changePassword()
+}
+
+entity Subscription <<Подписка == дом>> {
+    id: string
+    name: string
+    fulfillPayment()
+    cancel()
+}
+
+entity Transaction {
+    id: string
+    status: string
+    timestamp: DateTimeOffset
+    gateway: string
+    total: double
+    complete()
+    cancel()
+}
+
+struct Param {
+    name: string
+    valueStr: string
+    valueDbl: double
+}
+
+abstract class DeviceBase {
+    id: string;
+    type: string;
+    name: string;
+    params: Param[]
+    add()
+    remove()
+    rename(string name)
+    setParam(Param @)
+    forceUpdate(Param @)    
+}
+
+entity Thermostat {
+}
+
+entity Lightbulb {
+}
+
+entity Gates {
+}
+
+entity ClimateMisc <<Кондиционеры/увлажнители/etc>> {
+}
+
+entity Camera {
+    stream()
+}
+
+entity Workflow {
+    id: string
+    name: string
+    deviceId: string
+    deviceType: string
+    triggerTime: DateTimeOffset
+    triggerVal: Param
+    actions: json[]
+    update()
+    remove()
+    run()
+}
+
+enum TicketStatus {
+    new
+    ongoing
+    resolved
+    closed
+    reportedAsBug
+}
+
+entity SupportTicket {
+    id: string
+    title: string
+    description: string
+    chat: json[]
+    status: TicketStatus
+    close()
+    addReply(string @)
+}
+
+User ||--|{ SupportTicket
+TicketStatus o-- SupportTicket
+Param o-- DeviceBase
+Camera *-- DeviceBase
+ClimateMisc *-- DeviceBase
+Gates *-- DeviceBase
+Thermostat *-- DeviceBase
+Lightbulb *-- DeviceBase
+User ||--o{ Subscription
+Subscription ||---|{ Transaction
+Subscription ||--|{ DeviceBase
+DeviceBase ||--o{ Workflow
+
+
+@enduml

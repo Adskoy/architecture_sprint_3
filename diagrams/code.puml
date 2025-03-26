@@ -1,0 +1,60 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Диаграмма кода планировщика пользовательских сценариев
+
+object java_lang_Exception {
+}
+
+package pepe as "com.warmhouse.workflow" {
+
+    circle WorkflowService
+    
+    object WorkflowSchedulerImpl
+    
+    object Initializr {
+        Планировщик в Spring
+    }
+    
+    object WorkflowException {
+        Подробности сбоя сценария
+    }
+        
+    object Mediator {
+    }
+        
+    object AbstractRequest {
+        Запрос к медиатору
+    }
+    
+    object AbstractResponse {
+        Ответ от медиатора
+    }
+    
+    object GetViableWorkflowRequest {
+        Получение требуемого сценария
+    }
+    
+    object GetViableWorkflowResponse {
+        Ответ с подходящим сценарием
+    }
+    
+    object RunWorkflowCommand {
+        Выпонение потока
+    }
+        
+    WorkflowService -- WorkflowSchedulerImpl
+    WorkflowSchedulerImpl <. Initializr : triggers
+    WorkflowSchedulerImpl .> WorkflowException : throws
+    WorkflowSchedulerImpl .> GetViableWorkflowRequest : creates
+    WorkflowSchedulerImpl .> GetViableWorkflowResponse : parses
+    WorkflowSchedulerImpl .> RunWorkflowCommand : creates
+    Mediator <. AbstractRequest : receives
+    Mediator .> AbstractResponse : produces
+    WorkflowException --> java_lang_Exception
+    GetViableWorkflowResponse --> AbstractResponse
+    GetViableWorkflowRequest --> AbstractRequest
+    RunWorkflowCommand .> AbstractRequest: produces
+}
+
+@enduml

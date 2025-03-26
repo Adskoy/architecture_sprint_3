@@ -1,0 +1,51 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Диаграмма компонентов для сервиса сценариев 
+
+left to right direction
+
+Container(webui, "Веб-интерфейс", "React", "Абстракция для WebUI->BFF->API Gate")
+Container(mobileapp, "Мобильное приложение", "Kotlin", "Абстракция для App->BFF->API Gate")
+Container(redis, "Распределенный кэш", "Redis/Garnet", "Кэширование частых запросов и показаний датчиков") #red
+ContainerQueue(kafka, "Брокер сообщений", "Kafka", "Обеспечение связи между сервисами") #orange
+
+Container(db_boundary, "MongoDB cluster") {
+    ContainerDb(db, "База сценариев", "Primary", "Write replica") #green
+    ContainerDb(db2, "База сценариев", "Secondary", "Read replica") #green
+    ContainerDb(db3, "База сценариев", "Secondary", "Read replica") #green
+    Rel(db, db3, "Реплицируется")
+    Rel(db, db2, "Реплицируется")
+}
+
+
+Container_Boundary("workflow_boundary", "Сервис пользовательских сценариев") {
+
+    Component(workflow_controller, "Workflow Controller", "Spring REST controller", "Позволяет пользователям управлять сценариями реагирования на события датчиков/времени")
+    Component(repo, "Workflow Repository", "Spring Bean", "Хранилище сценариев")
+    Component(notifier, "Notification Sender", "Spring Bean", "Занимается рассылкой уведомлений")
+    
+    Rel(repo, redis, "Читает и пишет кэш сценариев")
+    Rel(workflow_controller, repo, "Использует")
+    Rel(repo, db_boundary, "Читает и пишет сценарии", "MQL")
+    
+    Component(runner, "Workflow Runner", "Spring Bean", "Выполняет цепочку действий, указанных в потоке")
+    
+    Component(scheduler, "Scheduler", "Spring Bean", "По таймеру запускает подходящие сценарии")
+    Rel(scheduler, repo, "Читает сценарии")
+    Rel(scheduler, runner, "Запускает поток")    
+    
+    Component(trigger, "Workflow Trigger", "Spring Bean", "Запускает потоки по событию датчика")
+    Rel(kafka, trigger, "Передает текущее состояние датчика")
+    Rel(trigger, repo, "Читает подходящие сценарии")
+    Rel(trigger, runner, "Запускает поток")
+    Rel(notifier, kafka, "Отсылает уведомление по указанному каналу")    
+    
+    Rel(runner, kafka, "Устанавливает пользовательское значение датчика")
+    Rel(runner, notifier, "Отсылает уведомление")    
+}
+
+Rel(webui, workflow_controller, "Шлёт CRUD запросы", "REST")
+Rel(mobileapp, workflow_controller, "Шлёт CRUD запросы", "REST")
+
+@enduml

@@ -1,0 +1,111 @@
+@startuml
+title C4 Диаграмма контекста монолитной системы
+top to bottom direction
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+Person(user, "Пользователь", "Основной генератор нагрузки")
+System_Ext(devices, "Устройства и датчики", "Пользовательские штуки, которыми надо управлять")
+System_Ext(bank, "Платёжные шлюзы", "Различные системы онлайн-оплаты")
+System_Ext(email, "Система email-рассылки", "SendGrid или типа того")
+System_Ext(push, "Шина push-уведомлений", "Firebase и что там у apple")
+System_Ext(messenger, "Шина уведомлений в мессенджер", "Telegram/Viber/etc")
+System_Boundary(target_saas, "Целевая система") {
+    ContainerQueue(kafka, "Брокер сообщений", "Kafka", "Обеспечение связи между сервисами") #orange    
+    Container(redis, "Распределенный кэш", "Redis/Garnet", "Кэширование частых запросов и показаний датчиков") #red    
+    Container(api, "API gateway", "Kong", "Унификация эндпоинтов, аутентификация и балансировка") #black   
+    Container(hub, "Хаб устройств", "OpenHAB", "Подключение устройств с гетерогенных систем к общей унифицированной шине") #purple
+    System_Boundary(front, "Фасад") {
+         Person(support, "Сотрудник поддержки", "Помогает пользователям")
+         Container(webuibff, "BFF для вебморды", "NextJS", "Собирает json для веб-интерфейса") #pink
+         Container(mobileappbff, "BFF для мобильного клиента", "Java/Spring", "Собирает json для мобильного клиента") #pink
+         Container(webui, "Вебморда", "React", "Веб-портал") #pink
+         Container(mobileapp, "Мобильный клиент", "Kotlin", "Приложение чтобы пуши ходили") #pink
+    }    
+    System_Boundary(sub, "Пользовательская зона") {
+         Container(auth, "Сервис аутентификации", "Java/Spring", "Регистрация, изменение учётных данных, аутентификация")
+         ContainerDb(authdb, "База учётных записей","PostgreSQL", "Инфо об аккаунтах") #0078d7
+         Container(subscription, "Сервис подписок", "Управление подписками (домами)")
+         ContainerDb(subscriptiondb, "База подписок", "MongoDB", "MQL") #green
+         Rel(api, subscription,"Получает и записывает данные")
+         Rel(subscription, subscriptiondb, "Пишет/читает инфо о подписках", "MQL")
+         Rel(subscription, kafka, "Трэкает подключение/отключение датчиков")
+    }    
+    System_Boundary(misc, "Внутряк") {
+        Person(admin, "Администратор", "Администрирует")    
+        Container(telemetry, "Сервис телеметрии", "Собирает трейсы из кафки")
+        ContainerDb(telemetrydb, "Prometheus", "Телеметрия всего и вся") #red
+        Rel(kafka, telemetry, "Событие телеметрии")
+        Rel(telemetry, telemetrydb, "Пишет трейсы")
+        Rel(support, webui, "Разруливание проблем, репорт багов")        
+        Container(grafana, "Grafana", "Мониторинг всего добра")
+        Rel(admin, grafana, "Смотрит дашбордики")
+        Rel(grafana, telemetrydb, "Читает трейсы")        
+        Container(_support, "Хэлпдеск", "Java/Spring", "Поддержка пользователей")
+        ContainerDb(supportdb, "MongoDB", "Список тикетов") #green
+        Rel(_support, supportdb, "Пишет и читает тикеты")
+        Rel(_support, redis, "Читает и кэширует тикеты")
+        Rel(api, _support, "Получает и записывает данные")        
+        Container(notifications, "Сервис нотификаций", "Java/Spring", "Транслирует события системы пользователю. \n Пока без БД - пуши в шине, а письма в ящике.")
+        Rel(kafka, notifications, "Пересылка уведомления")
+        Rel(notifications, push, "PUSH-уведомление")
+        Rel(notifications, email, "Email-уведомление")
+        Rel(notifications, messenger, "Уведомление в мессенджер")        
+        Container(payment, "Платёжный сервис","Java/Spring", "Обработка платежей по подпискам")
+        ContainerDb(paymentdb, "База транзакций", "PostgreSQL", "Хранение платёжных операций") #0078d7
+        Rel(payment, paymentdb, "Состояние транзакции", "SQL")
+        Rel(subscription, payment, "Запускает процесс оплаты", "REST")
+        Rel(payment, subscription, "Уведомляет о завершении оплаты", "REST")
+        Rel(api, payment, "Редирект на оплату")
+        Rel(payment, bank, "Оплата подписки")
+    }
+    System_Boundary(device_services, "Сервисы устройств") {    
+        Container(thermal, "Сервис термических устройств", "Java/Spring", "Мониторинг температуры, регулировка отопления")
+        ContainerDb(thermaldb, "База термических устройств", "MongoDB", "Инфо об устройствах") #green
+        Rel(thermal, thermaldb, "Инфо об датчиках", "MQL")
+        Rel(api, thermal, "Получает и записывает данные")
+        Rel(thermal, kafka, "Получает показания, \n уведомляет о подключении/отключении датчика.")
+        Rel(thermal, redis, "Получает показания датчиков")        
+        Container(climate, "Сервис климатических устройств", "Java/Spring", "Регулировка температуры/влажности/etc")
+        ContainerDb(climatedb, "База климатических устройств", "MongoDB", "Инфо об устройствах") #green
+        Rel(climate, climatedb, "Инфо об датчиках", "MQL")
+        Rel(api, climate, "Получает и записывает данные")
+        Rel(climate, kafka, "Получает показания, \n уведомляет о подключении/отключении датчика.")
+        Rel(climate, redis, "Получает показания датчиков")        
+        Container(security, "Сервис СКУД", "Java/Spring", "Управление воротами/замками/etc")
+        ContainerDb(securitydb, "База СКУД", "MongoDB", "Инфо об устройствах") #green
+        Rel(security, securitydb, "Инфо об датчиках", "MQL")
+        Rel(api, security, "Получает и записывает данные")
+        Rel(security, kafka, "Получает показания, \n уведомляет о подключении/отключении датчика.")
+        Rel(security, redis, "Получает показания датчиков")        
+        Container(light, "Сервис освещения", "Java/Spring", "Регулировка цвета/интенсивности освещения")
+        ContainerDb(lightdb, "База освещения", "MongoDB", "Инфо об устройствах") #green
+        Rel(light, lightdb, "Инфо об датчиках", "MQL")
+        Rel(api, light, "Получает и записывает данные")
+        Rel(light, kafka, "Получает показания, \n уведомляет о подключении/отключении датчика.")
+        Rel(light, redis, "Получает показания датчиков")        
+        Container(cameras, "Сервис камер", "Java/Spring", "Просмотр видео с подключенных устройств")
+        ContainerDb(camerasdb, "База камер", "MongoDB", "Инфо об устройствах") #green
+        Rel(cameras, camerasdb, "Инфо об датчиках", "MQL")
+        Rel(api, cameras, "Получает и записывает данные")
+        Rel(cameras, kafka, "Стримит видео, \n уведомляет о подключении/отключении датчика.")        
+        Container(workflow, "Сервис пользовательских сценариев", "Java/Spring", "Настраиваемые сценарии для устройств по таймеру/значению")
+        ContainerDb(workflowdb, "База пользовательских сценариев", "MongoDB", "Пользовательские алгоритмы для реагирования") #green
+        Rel(workflow, workflowdb, "Сценарий реагирования", "MQL") 
+        Rel(api, workflow, "Получает и записывает данные")
+        Rel(workflow, kafka, "Получает показания, \n устанавливает значение для датчика.")
+        Rel(light, redis, "Читает кэш сценариев")
+    }    
+    Rel(kafka, redis, "Кэширует собранные хабом показатели датчиков")
+    Rel(user, webui, "Управляет устройствами, сценариями и подписками, пишет в тп")
+    Rel(user, mobileapp, "Управляет устройствами, сценариями и подписками, пишет в тп")
+    Rel(webui, webuibff, "CRUD-запросы", "REST")
+    Rel(mobileapp, mobileappbff, "CRUD-запросы", "REST")
+    Rel(mobileappbff, api, "CRUD-запросы", "REST")
+    Rel(webuibff, api, "CRUD-запросы", "REST")
+    Rel(auth, authdb, "Инфо о пользователе", "SQL")
+    Rel(api, auth, "Получает и записывает данные")    
+    Rel(devices, hub, "Публикует показания датчиков")
+    Rel(hub, devices, "Отправляет команды на устройства")
+    Rel(hub, kafka, "Публикует показания датчиков")
+    Rel(kafka, hub, "Отправляет команды на устройства")
+}
+@enduml
