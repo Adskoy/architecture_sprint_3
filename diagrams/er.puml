@@ -96,7 +96,7 @@ entity SupportTicket {
     addReply(string @)
 }
 
-User }o-- SupportTicket
+User ||--|{ SupportTicket
 TicketStatus o-- SupportTicket
 Param o-- DeviceBase
 Camera *-- DeviceBase
@@ -104,10 +104,10 @@ ClimateMisc *-- DeviceBase
 Gates *-- DeviceBase
 Thermostat *-- DeviceBase
 Lightbulb *-- DeviceBase
-User --o{ Subscription
-Subscription --|{ Transaction
-Subscription --|{ DeviceBase
-DeviceBase }o-- Workflow
+User ||--o{ Subscription
+Subscription ||---|{ Transaction
+Subscription ||--|{ DeviceBase
+DeviceBase ||--o{ Workflow
 
 
 @enduml
