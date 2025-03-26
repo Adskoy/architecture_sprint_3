@@ -88,7 +88,7 @@
 
 - [Диаграмма сущностей](./diagrams/er.puml)
 
-![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/er.puml)
+![ERD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/er.puml)
 
 # ❌ Задание 4. Создание и документирование API
 
