@@ -86,9 +86,9 @@
 
 # Задание 3. Разработка ER-диаграммы
 
-- [Диаграмма сущностей](./diagrams/er.puml)
+- [Диаграмма сущностей](./diagrams/erd.puml)
 
-![ERD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/er.puml)
+![ERD](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/erd.puml)
 
 # ❌ Задание 4. Создание и документирование API
 
