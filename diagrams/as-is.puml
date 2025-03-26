@@ -1,0 +1,16 @@
+@startuml
+title C4 Диаграмма контекста монолитной системы
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Основной генератор нагрузки")
+System(API, "API System", "System managing temperature at home")
+
+System_Ext(relay, "Температурное реле", "Внешний компонент, на который цепляются датчики")
+
+Rel(user, API, "Просматривает и устанавливает температуру в доме")
+Rel(API,relay,"Запрашивает значения с датчиков. \n Регулирует температуру отопления.")
+
+@enduml
