@@ -50,17 +50,19 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
+> Если что, тут не картинки, а прямой рендер из директории `./diagrams`
+
 [Диаграмма контекста монолита](./diagrams/as-is.puml)
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/as-is.puml)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
-В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
-
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+[Диаграмма контейнеров](./diagrams/container.puml)
+
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/container.puml)
 
 **Диаграмма компонентов (Components)**
 
