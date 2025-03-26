@@ -68,17 +68,21 @@
 
 Выделены 3 основных рабочих сервиса (сервисы устройств объединены в единую диаграмму)
 
-[Диаграмма контейнеров - сервис сценариев](./diagrams/component-workflow.puml)
-[Диаграмма контейнеров - сервисы устройств](./diagrams/component-device.puml)
-[Диаграмма контейнеров - сервис авторизации](./diagrams/component-auth.puml)
+- [Диаграмма контейнеров - сервис сценариев](./diagrams/component-workflow.puml)
+- [Диаграмма контейнеров - сервисы устройств](./diagrams/component-device.puml)
+- [Диаграмма контейнеров - сервис авторизации](./diagrams/component-auth.puml)
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-workflow.puml)
+
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-device.puml)
+
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/component-auth.puml)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+- [Диаграмма кода - служба запуска пользовательского сценария по таймеру](./diagrams/code.puml)
+  
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/adskoy/architecture_sprint_3/warmhouse/diagrams/code.puml)
 
 # Задание 3. Разработка ER-диаграммы
 
