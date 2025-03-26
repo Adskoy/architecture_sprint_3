@@ -3,10 +3,10 @@ title C4 Диаграмма контекста монолитной систем
 
 top to bottom direction
 
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 Person(user, "Пользователь", "Основной генератор нагрузки")
-System(API, "API System", "System managing temperature at home")
+System(API, "API System", "Система для управления температурой в доме")
 
 System_Ext(relay, "Температурное реле", "Внешний компонент, на который цепляются датчики")
 
